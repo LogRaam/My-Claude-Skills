@@ -4,7 +4,7 @@ Skills for Claude Code (and other agents that read `SKILL.md`), written to be re
 
 | Skill | What it teaches |
 |---|---|
-| [`generated-maps`](generated-maps/SKILL.md) | Keep an AI-built codebase legible: views of the system generated from its own source, committed, and checked by a test that fails when they drift. Informing maps vs blocking contracts and ratchets. |
+| [`generated-maps`](generated-maps/README.md) | Keep an AI-built codebase legible: views of the system generated from its own source, committed, and checked by a test that fails when they drift. Informing maps vs blocking contracts and ratchets. New to the idea? Start with [its README](generated-maps/README.md). |
 
 ## Install
 
