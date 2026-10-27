@@ -41,3 +41,17 @@ before-save listeners went 3 -> 2. The oldest of the three was left for the owne
 **What no map caught.** While consolidating a calendar constant, the model put a game-specific value into the
 engine-agnostic layer. The owner caught it within the hour by reading the code. The maps did list every
 consequence of the fix (four new mutable statics), which is where that cost belongs.
+
+## Second project: a zero-dependency JavaScript app (Relais, 26/10/2026)
+
+The skill's first run on another codebase, plain JavaScript with no npm dependency
+([A-Postman-Alternative](https://github.com/LogRaam/A-Postman-Alternative)). Bootstrapped in the order above in
+one session; what the first loop showed:
+
+- **Silent generator error on day one.** The inventory reported a file's header comment as the doc of its first
+  constant. Nothing failed; it read plausibly. Fixed by counting a doc only when it touches its declaration.
+- **Implicit code, fixed in the code.** Twelve private helpers showed "no doc". One line each, not a generator change.
+- **Generators are code too.** One map named a test file that did not exist; another broke its own Markdown table
+  on `number|null`. Both were visible only by READING the first maps, which is why step 3 of the loop is reading.
+- **Guards proven, not assumed.** On a throwaway copy, a released export field removed was refused by the test and
+  by the update command; a duplicated top-level name was refused by the build.

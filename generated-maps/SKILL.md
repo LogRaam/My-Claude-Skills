@@ -100,6 +100,24 @@ Generator requirements:
   anchor per layer (e.g. `.git` in every repo), never for a runner's name.
 - **Each map states its own blind spots in its header** (e.g. "dependencies read from import statements:
   fully qualified names are missed, unused imports counted"). The caveat is part of the map.
+- **Line endings: add `.gitattributes` (`* text=auto eol=lf`) BEFORE the first commit**, and compare with line
+  endings normalized. On Windows a CRLF checkout against an LF generator turns every map red for no reason.
+- **A doc comment belongs to a declaration only if it touches it** (no blank line between). Otherwise the file's
+  header comment is silently reported as the doc of its first declaration.
+- **Escape what the output format reserves**: a `|` inside a Markdown table cell (`number|null`) breaks the row.
+- **No parser in the toolchain** (plain JavaScript, no TypeScript, no npm)? Vendor one parser file for the tools
+  only (e.g. acorn), pinned, with its license and the registry integrity checked. It never ships. Guessing
+  structure from regexes and names is the fragile detection this skill warns against.
+- **For a contract, generate the map by RUNNING the list the code itself validates with** (a field list the
+  importer checks against), not by parsing around it. Then the map cannot disagree with the behaviour.
+- **Every committed generated file gets the same compare test**, not only maps: a bundled build output, a
+  generated client. It rots the same way.
+- **Prove each blocking check blocks before trusting it**: on a throwaway copy, remove a released field, add a
+  cycle, duplicate a name, and watch both the test and the update command refuse.
+- **Before the first release a contract guard protects nothing**: its released snapshot is empty. Say so in the
+  map itself ("none yet, so nothing is protected") rather than letting the guard look like protection.
+- **Constraints your own build creates are build errors, not maps.** A build that joins modules into one scope
+  refuses two top-level declarations with the same name, loudly; a map would only describe the collision.
 
 ## When a map is wrong
 
