@@ -70,6 +70,10 @@ risk, not a caveat.
   the count drops, the test asks for the baseline to be lowered in the same commit, so the mess being worked
   off cannot quietly become the target. Raising a baseline is a hand edit with a reason.
 - **Overrides** are explicit flags (`ALLOW_SAVE_KEY_REMOVAL`, `ALLOW_API_REMOVAL`), never a regeneration.
+- **A contract breaks in both directions.** For data users keep (exports, saves), a field ADDED as required is as
+  breaking as a removal: every file the released version wrote now fails to import, and the map shows the change
+  as a harmless "+N -0". Guard it too (a field added since the release must be optional, or sit under a new
+  optional one), and commit a fixture written by the real old code that must keep importing.
 
 A **decision table** sits between the two: sweep a bounded value (a score, a tier) across its whole range,
 call every rule that depends on it, commit the table. It runs the code rather than reading it, so a changed
