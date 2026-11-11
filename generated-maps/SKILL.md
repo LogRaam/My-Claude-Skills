@@ -73,7 +73,11 @@ risk, not a caveat.
 - **A contract breaks in both directions.** For data users keep (exports, saves), a field ADDED as required is as
   breaking as a removal: every file the released version wrote now fails to import, and the map shows the change
   as a harmless "+N -0". Guard it too (a field added since the release must be optional, or sit under a new
-  optional one), and commit a fixture written by the real old code that must keep importing.
+  optional one), and commit a fixture written by the real old code that must keep importing. If the real data
+  is personal (paths, names, a user's own records), keep its structure and types and replace every string with
+  a placeholder naming its key (`"<meta.title>"`); the contract is about keys and shapes, not values. A value
+  the importer checks (an enum, a parsed date, an id another entry points to) stays valid: keep it, or replace
+  it with a made-up value of the same kind, or the fixture fails for a reason that is not the contract.
 
 A **decision table** sits between the two: sweep a bounded value (a score, a tier) across its whole range,
 call every rule that depends on it, commit the table. It runs the code rather than reading it, so a changed
@@ -90,7 +94,8 @@ Smallest useful version, in order; each step is worth having alone. See `referen
 4. **Contracts next**, before more views: persisted data, public API, wire formats.
 5. **Dependencies** (cycles first, then most-used / most-using, then the pairs that use each other) and a
    **rules index** generated from test names (the closest thing to a specification: a behaviour that matters
-   is held by a test).
+   is held by a test). No behaviour tests yet? Do not commit an empty rules index; say in the maps README that
+   it starts with the first behaviour test, and add it then.
 6. **Then one lens per bug family you have actually had twice.** Group the last twenty bug reports; the list
    will be specific to the project. Each generator's header names the incident that justified it.
 
@@ -100,6 +105,8 @@ Generator requirements:
   No build dependencies needed, and doc comments survive, so a map says what each thing is for.
 - **Deterministic output**: stable sort, no timestamps, no absolute paths, no machine-specific content. A noisy
   diff is a diff nobody reads.
+- **Locate by enclosing name (`module.Class.method`), never by line number.** One line added at the top of a
+  file shifts every entry below it, and the map turns red for a change it does not describe.
 - **Skip, don't fail, when the tree is incomplete** (a runner that works from a partial copy). Check for an
   anchor per layer (e.g. `.git` in every repo), never for a runner's name.
 - **Each map states its own blind spots in its header** (e.g. "dependencies read from import statements:
@@ -114,12 +121,21 @@ Generator requirements:
   structure from regexes and names is the fragile detection this skill warns against.
 - **For a contract, generate the map by RUNNING the list the code itself validates with** (a field list the
   importer checks against), not by parsing around it. Then the map cannot disagree with the behaviour.
+  **No such list?** (keys written as a dict literal, read back one by one.) Read both sides from syntax and
+  classify each key by how it is read: with a default (`d.get("k", ...)`) = optional, bare (`d["k"]`) = required,
+  never read = silently lost. Name the functions read in the map's blind spots, and the reads this cannot
+  classify (`"k" in d`, `setdefault`, a whole dict unpacked into a constructor, `Cls(**d)`, which makes every
+  key required). Creating the list in the code
+  is the better fix when the format is still changing.
 - **Every committed generated file gets the same compare test**, not only maps: a bundled build output, a
   generated client. It rots the same way.
 - **Prove each blocking check blocks before trusting it**: on a throwaway copy, remove a released field, add a
   cycle, duplicate a name, and watch both the test and the update command refuse.
 - **Before the first release a contract guard protects nothing**: its released snapshot is empty. Say so in the
   map itself ("none yet, so nothing is protected") rather than letting the guard look like protection.
+- **No version numbers?** (a personal tool, an executable swapped in place.) A release is whenever the build in
+  use is replaced: record the snapshot then, from the keys that build writes. When users already have saved
+  files, the first snapshot should equal the keys found in a real one; check it.
 - **Constraints your own build creates are build errors, not maps.** A build that joins modules into one scope
   refuses two top-level declarations with the same name, loudly; a map would only describe the collision.
 
@@ -131,6 +147,10 @@ Watch for two kinds of failure in the maps themselves, and report them when they
   named `...Regard` counted as thresholds; the fix was better names). Silently: something with no telltale name
   is invisible (thresholds compared inline with no constant). Pair every name-based detector with a fact-based
   one (what the code calls, compares, imports, attributes) wherever a fact exists.
+- **Not every fact is a strong signal.** "The same number appears in several places" is mostly noise (the `3`
+  of "3 seconds" and the `3` of "3 people"). "The same expression SHAPE appears in several places" (variables
+  replaced by `_`: `max(120, 0.1 * _)`) is almost always one concept. List the strong signal first, the weak one
+  after, and label the weak section as needing judgement. Recipe in `references/generator-recipes.md`.
 - **A map that mixes detection modes labels EVERY line with the mode that produced it** (`(fact)` / `(name)`),
   so a reader knows what to trust.
 - **When a map is blind, decide why.** If the CODE is implicit (a human reader would have to guess too), change

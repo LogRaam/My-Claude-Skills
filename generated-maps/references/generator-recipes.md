@@ -80,6 +80,47 @@ for score in range(-100, 101):
 Emit only the rows where some answer changes (the turning points) plus a summary. Last section: rules that
 could be swept vs thresholds that exist; that gap measures how much logic is still compared inline.
 
+## Repeated threshold by expression shape (fact-based)
+
+Find every comparison and every `min`/`max` that contains a literal number, replace what varies with `_`, and
+group by the resulting text. The same shape in two functions is almost always one concept written twice.
+
+```python
+class Shape(ast.NodeTransformer):
+    def generic_visit(self, node):
+        if isinstance(node, (ast.Name, ast.Attribute, ast.Subscript)):
+            return ast.Name("_")
+        if isinstance(node, ast.Call):
+            keep = isinstance(node.func, ast.Name) and node.func.id in ("max", "min", "abs") and has_number(node)
+            if not keep:
+                return ast.Name("_")      # any call without a number, max(a, b) included, is just a value
+            node.args = [self.visit(a) for a in node.args]
+            return node                   # keep the function name: max(120, 0.1 * _)
+        return super().generic_visit(node)
+
+for node in ast.walk(module):
+    if (isinstance(node, ast.Compare) or is_min_max(node)) and has_number(node):
+        shapes[ast.unparse(Shape().visit(copy.deepcopy(node)))].add(enclosing_qualname(node))
+report = {shape: where for shape, where in shapes.items() if len(where) > 1}
+```
+
+- `has_number`, `is_min_max` and `enclosing_qualname` are left to write (a literal number anywhere below the
+  node; a call to `min`/`max`; the dotted name of the enclosing class and function).
+- `ast.walk` also visits the `max` nested inside a comparison, so the same duplicate can be listed twice (as the
+  comparison and as the `max`). Harmless; merge them if the noise bothers the reader.
+- Without the "call without a number is a value" rule, `max(120, 0.1 * max(d1, d2))` and
+  `max(120, 0.1 * duration)` get different shapes and the real duplicate is missed.
+- Locate by enclosing function, not by line (see Generator requirements).
+- Keep the weaker "same number in several functions" list below it, labelled as needing judgement.
+
+## Contract keys without a key list (Python)
+
+Writes: the string keys of the dict literals in the save function. Reads: in the load functions,
+`var.get("k", ...)` and `var.get("k")` mark `k` optional; `var["k"]` marks it required unless a `.get` or an
+`"k" in var` test of the same key exists (then the bare read is guarded). `Cls(**var)` makes every key required:
+list it in the blind spots rather than guessing. The guard compares both against the released snapshot: a released key no
+longer written or read is lost data; a key read as required that is not in the snapshot breaks old files.
+
 ## Rules index from test names
 
 Turn every test name into a sentence (`Refuses_gift_when_regard_below_friend` -> "Refuses gift when regard below

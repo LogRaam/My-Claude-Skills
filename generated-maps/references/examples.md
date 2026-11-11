@@ -55,3 +55,24 @@ one session; what the first loop showed:
   on `number|null`. Both were visible only by READING the first maps, which is why step 3 of the loop is reading.
 - **Guards proven, not assumed.** On a throwaway copy, a released export field removed was refused by the test and
   by the update command; a duplicated top-level name was refused by the build.
+
+## Third project: a personal Python/Tkinter desktop tool (11/11/2026)
+
+A one-person Windows tool that sorts video files into folders and keeps a persistent transfer queue
+(about 2,000 lines of Python, no tests before the maps, built in one long session before the skill was loaded).
+Bootstrapped afterwards; what the first loop showed:
+
+- **Line numbers made the first constants map noisy.** Entries were located as `module:326`; any line added
+  above would have turned the map red. Relocated by enclosing function (`Row.render_meta`).
+- **Numbers alone were noise, shapes were signal.** "Same number in several places" grouped the `3` of a
+  3-second delay with the `3` of a three-way split. "Same expression shape" found the real duplicate on the
+  first run: a duration tolerance `max(120, 0.1 * _)` written once in the display code and once in the file
+  comparison, so changing one would silently leave the other behind. It needed one generator fix to be seen:
+  a nested `max(d1, d2)` had to count as a plain value.
+- **A contract with no key list.** The saved queue was a dict literal written in one method and read with
+  `d.get(...)` in another. Keys were classified from syntax (read with a default = optional). The first snapshot
+  equalled the 17 keys of the user's real saved file. Proven on a throwaway copy: a released key removed was
+  refused by the test and by the update command; a new key read as required was refused; the override passed.
+- **The real fixture was personal data.** Kept structure and types, every string replaced by `"<key>"`.
+- **No releases, no behaviour tests.** "Release" was defined as replacing the running executable; the rules
+  index was left out until a first behaviour test exists.
