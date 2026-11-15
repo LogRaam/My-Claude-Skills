@@ -121,7 +121,8 @@ within weeks "regenerate and commit" becomes a reflex. Plan for that.
 Asked for maps of SOLID or Tell Don't Ask? A principle cannot be measured; its breaches that have cost you
 something can. "Decisions the glue makes against a bare number instead of asking the rules layer" is Tell Don't Ask
 made countable, and as a ratchet it needs no reader at all. Filter until every line is a real case: one such map went
-from 330 naive hits to 16 real ones, and the first run showed one fact decided twice the opposite way.
+from 330 naive hits to 16 real ones, and the first run showed one threshold written twice in two files: in agreement
+today, free to drift tomorrow.
 
 A third kind sits between: a **decision table**. Take a value the system decides by (a score from -100 to
 +100), call every rule that depends on it at every step, and commit the table of answers. When you refactor,

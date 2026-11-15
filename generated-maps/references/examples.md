@@ -82,8 +82,10 @@ Bootstrapped afterwards; what the first loop showed:
 **Asked for "SOLID maps".** The owner asked for maps that would put SOLID and Tell Don't Ask into practice. What
 was built: two guards named after incidents, not principles. (1) Decisions made in the glue against a bare number
 (a fact read off an object compared with a literal outside the pure layer), counted by a ratchet: a naive pass gave
-330 lines, the filtered one 16, and the first run showed a town's loyalty decided `< 50` in one file and `>= 50` in
-another, and an "is adult" age test beside the project's own age gate. (2) The swap-risk script moved into the
+330 lines, the filtered one 16, and the first run showed a town's loyalty threshold written in two files (`< 50` in
+one, `>= 50` in the other: the same 50, agreeing today, free to drift) and the engine's default coming-of-age age
+written as a fallback in five places. The first report to the owner overstated both ("decided the opposite way", "a
+second age rule"); reading the lines corrected it the next turn. (2) The swap-risk script moved into the
 suite (below). Declined, with reasons: a Demeter map (the engine API is nothing but chains), interface maps (almost
 none exist), a type-size ratchet (splitting is the owner's call).
 
