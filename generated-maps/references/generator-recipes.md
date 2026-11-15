@@ -121,6 +121,25 @@ Writes: the string keys of the dict literals in the save function. Reads: in the
 list it in the blind spots rather than guessing. The guard compares both against the released snapshot: a released key no
 longer written or read is lost data; a key read as required that is not in the snapshot breaks old files.
 
+## Decisions outside the pure layer (Tell Don't Ask, fact-based)
+
+Count, in the glue only (not the pure rules layer, not diagnostics or the console), every relational comparison
+(`<`, `<=`, `>`, `>=`, and relational patterns such as `{Loyalty: >= 50}`) where one side is a numeric literal and
+the other READS A FACT OFF AN OBJECT: a member access, a conditional access, or a call to a method named `Get...`.
+
+- Leave out, measured as noise: 0, 1 and -1 (emptiness and sign tests); numbers under 0.01 (epsilons); `Count`,
+  `Length`, `Capacity` (list caps, truncation); comparisons inside a `for`/`while` condition.
+- List by namespace as `Type.Member`: `expression`; ratchet the total.
+- Blind spots for the header: a fact read into a local first (`var rel = ...; if (rel >= 30)`), named constants in
+  the glue (the constants map has them), equality tests.
+
+## Swap risk
+
+For every public method, constructor and delegate of the pure layer, take the parameter shapes (modifier plus type,
+whitespace removed: `outstring` differs from `string`) and the longest run of identical consecutive shapes. A run of
+three or more is a call that can pass two arguments the wrong way round and still compile. Ratchet the count; the fix
+is a type the caller already has, or a facts object with named, init-only properties.
+
 ## Rules index from test names
 
 Turn every test name into a sentence (`Refuses_gift_when_regard_below_friend` -> "Refuses gift when regard below
@@ -137,3 +156,5 @@ time is the best summary of what the release promises.
 | Shared state (statics, caches, singletons) | a value captured once and read forever after |
 | Prompt / pipeline sections in order, with cache zone | a fact placed where its consumer cannot see it |
 | Gates: what opens an action vs what the executor demands | the two halves of one decision disagreeing |
+| Decisions outside the pure layer (fact vs bare number in the glue) | a threshold re-decided in the glue, drifting from its twin |
+| Swap risk (same-typed parameter runs) | two arguments passed the wrong way round, compiling |

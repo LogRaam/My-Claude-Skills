@@ -76,3 +76,30 @@ Bootstrapped afterwards; what the first loop showed:
 - **The real fixture was personal data.** Kept structure and types, every string replaced by `"<key>"`.
 - **No releases, no behaviour tests.** "Release" was defined as replacing the running executable; the rules
   index was left out until a first behaviour test exists.
+
+## Same first project, two months later (14/11/2026)
+
+**Asked for "SOLID maps".** The owner asked for maps that would put SOLID and Tell Don't Ask into practice. What
+was built: two guards named after incidents, not principles. (1) Decisions made in the glue against a bare number
+(a fact read off an object compared with a literal outside the pure layer), counted by a ratchet: a naive pass gave
+330 lines, the filtered one 16, and the first run showed a town's loyalty decided `< 50` in one file and `>= 50` in
+another, and an "is adult" age test beside the project's own age gate. (2) The swap-risk script moved into the
+suite (below). Declined, with reasons: a Demeter map (the engine API is nothing but chains), interface maps (almost
+none exist), a type-size ratchet (splitting is the owner's call).
+
+**A manual tool rots.** The swap-risk script (public members with three same-typed parameters in a row) had taken
+the pure layer to zero two months earlier. Nothing ran it afterwards. Ported into the suite, it found 33; the
+script, run the same day, listed the same 33, which validated the port. One of them was a key function widened that
+same morning by the model writing the port. The ratchet starts at 33. On the way: an `out` parameter is part of a
+signature's shape (`string a, out string b` cannot be swapped), and the first port flagged exactly that.
+
+**The cycle ratchet, twice in one day.** A new public enum used from two namespaces drew them into the main cycle;
+a new namespace for a small behaviour was drawn in the moment the startup code and a self-test used it. Both times
+the fix was to place the code in a namespace already in the group (or mirror the enum in the pure layer), never to
+widen the baseline. Both times the message said only "a namespace joined a cycle"; naming the closing edges would
+have saved the guessing (now a generator requirement).
+
+**The compiler as a map.** Translating settings choices meant giving each list item an id, but the code compared
+the chosen item's text ("Off", "Mature"). Changing the list's item type from a string to a small type (id for the
+display, English for the code) made the compiler list every read and write; one self-test looked items up with
+`IndexOf("Occasionally")` and would have returned -1, silently, for every one.
