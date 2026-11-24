@@ -105,3 +105,32 @@ have saved the guessing (now a generator requirement).
 the chosen item's text ("Off", "Mature"). Changing the list's item type from a string to a small type (id for the
 display, English for the code) made the compiler list every read and write; one self-test looked items up with
 `IndexOf("Occasionally")` and would have returned -1, silently, for every one.
+
+## Fourth project: a series of programmed training videos (24/11/2026)
+
+Each episode is its own repository, copied from the previous one: a React/Remotion animation keyed to the words
+of a TTS narration, Python tools around it. Three maps (inventory, narration cues, every word the learner reads or
+hears) and blocking checks: every cue resolves in the script, and no out-of-scope word in the script, on screen or
+in the voice's transcript. Episode 3 was the first built from a copy; what it showed:
+
+- **The screen-text map was blinder than its header said.** The header promised "literals passed to tr()"; no
+  code read them. Labels typeset through `tr()`, a module-level list of phase names rendered by a loop, and a
+  string placed straight in the markup (`{today ? "AUJOURD'HUI" : ...}`) were all missing, so the blocking scope
+  check never scanned them. Found only because the map's list looked short next to the stills. Fixed in the
+  generator (`tr()` arguments, literals in JSX, module lists that look like display text), blind spots restated.
+- **A blocking check run after the step it protects.** Two cues written without their elision (`'assurance'` for
+  the token `L'assurance`) were found when a stills render crashed on the first one. The cue test, run next,
+  listed both at once. It should have run before the render.
+- **The update command stopped halfway.** It printed each diff before writing the map; an arrow in the diff
+  crashed the cp1252 console under a redirect, after some maps were written and before the others.
+- **Forking made the first diff ~500 lines** (old scenes deleted, new ones added, in one change) and the informing
+  test stayed red most of the session: the conditions for regenerating by reflex.
+- **The episode's banned-word list changed on purpose.** "agile" had been banned (other episodes' subject) and
+  became the topic; DevOps/SAFe vocabulary and framework names were added. Each pattern was tried on words it
+  must catch and words it must pass; the final review still found one too wide (`trains?` would block
+  "en train de").
+- **The inventory caught a misplaced doc again**: one comment describing two geometry constants sat on the first
+  only, leaving the second undocumented (the same failure as in episode 2).
+- **The map as an arbiter.** AI video reviews reported typos that did not exist ("les essai", "Pas dans le
+  suivante", "suivente-", a capital "Itération"); the screen-text map ruled out six claims and confirmed the real
+  defects (an overflowing card, a "marchait" on screen where the voice said "fonctionnait").

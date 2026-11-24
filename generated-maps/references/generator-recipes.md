@@ -41,6 +41,10 @@ static void AssertMapCurrent(string file, string generated)
 Sets the update flag, runs only the maps tests, then prints for each map: lines added/removed, and the full
 diff when it is 40 lines or fewer. It must leave blocking failures red and say so.
 
+Write each map first, print its diff after, and force the output encoding (Python:
+`sys.stdout.reconfigure(encoding="utf-8", errors="replace")`): a print that fails must not leave the maps half
+updated.
+
 ## Contract guard (persisted keys, public API)
 
 ```csharp

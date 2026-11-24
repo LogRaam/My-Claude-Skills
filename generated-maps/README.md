@@ -117,6 +117,10 @@ within weeks "regenerate and commit" becomes a reflex. Plan for that.
   grow." "The count of thresholds written as bare numbers may only go down." A ratchet needs no human reader at
   all, which is why it is the best answer to review fatigue. When the count drops, the baseline is lowered in
   the same commit, so the improvement is locked in.
+- **Rule lists**: patterns the project forbids (words out of scope for a training video, banned calls). The list
+  changes when the brief does, so it is edited by hand with a reason, and every pattern is tried on text it must
+  catch and text it must let through. A map whose list such a check scans must really read everything its header
+  claims: its blind spots become the check's.
 
 Asked for maps of SOLID or Tell Don't Ask? A principle cannot be measured; its breaches that have cost you
 something can. "Decisions the glue makes against a bare number instead of asking the rules layer" is Tell Don't Ask
@@ -161,6 +165,10 @@ Smallest useful version, in order. Each step is worth having alone.
 4. **Your contracts**: saved data, public API, wire formats. Promises your tests probably do not check today.
 5. **Then one map per kind of bug you have actually had twice.** Look at your last twenty bug reports and
    group them. Your list will not be ours.
+
+Starting from a copy of another project (a template, the next episode of a series)? Commit the copy untouched,
+remove what you will not use in a commit of its own, then build: otherwise the first diff mixes both and stays red
+for days, and nobody reads a diff that is always red.
 
 Or install the skill (see the [repository README](../README.md)) and ask your agent to "set up generated maps
 on this project": it follows that order.

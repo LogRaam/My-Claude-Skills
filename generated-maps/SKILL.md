@@ -51,6 +51,12 @@ Do these in this order. The order is the point.
 If a BLOCKING test fails (step 3), regeneration will not fix it and must not be forced. Change the code, or
 use the explicit override and write the reason in the commit.
 
+**Blocking checks run before the expensive step they protect**, not only before the commit. If a build, a render
+or a deploy fails on something a blocking check would have named (a reference that does not resolve), the check
+should have run first: wire it in front of that step (a `prebuild`/`prerender` script, the first line of the
+build tool). Found by the crash, a failure costs a wasted run and names one item; found by the check, it lists
+all of them at once.
+
 ## Informing vs blocking
 
 **Informing maps** (inventory, dependencies, rules index, constants, project lenses): fail, read, regenerate,
@@ -70,6 +76,12 @@ risk, not a caveat.
   the count drops, the test asks for the baseline to be lowered in the same commit, so the mess being worked
   off cannot quietly become the target. Raising a baseline is a hand edit with a reason.
 - **Overrides** are explicit flags (`ALLOW_SAVE_KEY_REMOVAL`, `ALLOW_API_REMOVAL`), never a regeneration.
+- **A rule list is blocking config, not an override.** Some blocking checks scan for patterns the project
+  forbids (words out of scope, banned calls), and the list changes on purpose when the project's brief does
+  (the next episode of a series allows a word the last one banned). Edit it by hand, give the reason in the
+  commit, and prove every new or loosened pattern on examples it must catch AND examples it must let through
+  ("revue de sprint" caught, "change d'échelle" not, "en train de" not): keep those examples as a test, or a
+  pattern widened for one case silently starts blocking ordinary text.
 - **A contract breaks in both directions.** For data users keep (exports, saves), a field ADDED as required is as
   breaking as a removal: every file the released version wrote now fails to import, and the map shows the change
   as a harmless "+N -0". Guard it too (a field added since the release must be optional, or sit under a new
@@ -121,6 +133,19 @@ Smallest useful version, in order; each step is worth having alone. See `referen
 6. **Then one lens per bug family you have actually had twice.** Group the last twenty bug reports; the list
    will be specific to the project. Each generator's header names the incident that justified it.
 
+**Starting from a copy** (a template, a fork, the next project of a series) is not a bootstrap: the maps
+already exist and describe the original. Done carelessly, the first diff is hundreds of lines that mix what
+the copy dropped with what the new work added, and the informing test stays red for the whole session, which
+teaches regeneration by reflex on day one.
+
+1. Commit the copy untouched, maps green, as the baseline.
+2. Remove what the new project will not use (the old episode's scenes, unused tools) in a commit of its own,
+   and regenerate: that diff should be pure deletion, and reading it takes a minute.
+3. Then build the new work, and run the compare at each milestone (a new component, a renamed concept), not
+   once at the end: a red that stays red for hours is a red nobody reads.
+4. Revisit the blocking rule lists the copy inherited (see "A rule list is blocking config"): what the original
+   forbade may now be the subject.
+
 Generator requirements:
 
 - **Read source syntax, not compiled output** (Roslyn syntax trees, tree-sitter, Python `ast`, TS compiler API).
@@ -133,6 +158,12 @@ Generator requirements:
   anchor per layer (e.g. `.git` in every repo), never for a runner's name.
 - **Each map states its own blind spots in its header** (e.g. "dependencies read from import statements:
   fully qualified names are missed, unused imports counted"). The caveat is part of the map.
+- **A coverage claim is checked like code.** The header says what the generator reads; nothing makes that true.
+  A generator whose header promised "literals passed to tr()" had no code for it, so the map looked complete
+  while missing labels. It matters most when a blocking check scans the map's list (out-of-scope words in
+  every on-screen string): the map's blind spots become the check's, silently. For each source the header
+  claims, plant one example and check it appears; when you find a path the generator misses (a list of labels
+  rendered by a loop, a string placed straight in the markup), either read it or name it in the blind spots.
 - **Line endings: add `.gitattributes` (`* text=auto eol=lf`) BEFORE the first commit**, and compare with line
   endings normalized. On Windows a CRLF checkout against an LF generator turns every map red for no reason.
 - **A doc comment belongs to a declaration only if it touches it** (no blank line between). Otherwise the file's
@@ -153,6 +184,9 @@ Generator requirements:
   generated client. It rots the same way.
 - **Prove each blocking check blocks before trusting it**: on a throwaway copy, remove a released field, add a
   cycle, duplicate a name, and watch both the test and the update command refuse.
+- **The update command writes each map before printing its diff, and forces UTF-8 output.** Printed first, a
+  diff holding an accent or an arrow crashed on a Windows console (cp1252) when the output was redirected, and
+  stopped the update halfway: some maps new, some old, the next compare red for no reason.
 - **Before the first release a contract guard protects nothing**: its released snapshot is empty. Say so in the
   map itself ("none yet, so nothing is protected") rather than letting the guard look like protection.
 - **No version numbers?** (a personal tool, an executable swapped in place.) A release is whenever the build in
@@ -214,6 +248,15 @@ Maps are not only for converging on the existing architecture. When a map shows 
 several places (spawn, steer, never saved, despawn before save, suppress the destroy event: three times), that
 is a proposal for a shared service. Say so to the user with the map lines as evidence; do not refactor
 unasked.
+
+## A map as an arbiter
+
+When a reviewer, especially an AI reviewer working from screenshots, a video or a summary, reports a defect
+in what the code produces ("the label says *le suivante*", "a typo in the card"), check the claim against the
+map that lists the produced text before changing anything. In one video project, six of the typos reported by
+AI reviews did not exist in the source; the screen-text map ruled each out in seconds, and it also confirmed
+the real ones. Fixing an unverified claim is churn at best and a regression at worst. The same holds the
+other way: a reviewer's "this is fine" is not evidence either.
 
 ## Reference
 
