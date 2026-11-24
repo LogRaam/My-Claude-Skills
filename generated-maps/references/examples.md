@@ -134,3 +134,19 @@ in the voice's transcript. Episode 3 was the first built from a copy; what it sh
 - **The map as an arbiter.** AI video reviews reported typos that did not exist ("les essai", "Pas dans le
   suivante", "suivente-", a capital "Itération"); the screen-text map ruled out six claims and confirmed the real
   defects (an overflowing card, a "marchait" on screen where the voice said "fonctionnait").
+
+**Episodes 4 to 7 of the same series (same day).** Each episode copied the previous one, then rewrote its frise.
+- Running the blocking checks before the render (`npm run render` with a `prerender` step) held: no render was
+  wasted on an unresolved cue across four episodes.
+- Reading the inventory before each new frise decided reuse versus creation: the sprint loop extended the agile loop
+  (same `LoopFrise`, new stations); the kanban board, the release train and the DevOps loop were new concepts, and
+  each previous frise left the inventory in the same commit.
+- **A stale map came with a copy.** Episode 7 was copied from episode 6 before episode 6's maps were regenerated: the
+  copy's baseline maps described neither project, and its first diff showed a removal (`BoardFrise`) nobody made in it.
+- **Labels kept in data stayed invisible.** Steps of a sequence held in an array inside a scene, and rows of a card
+  passed as tuples in a prop, reached the screen but not the screen-text map, so the scope check never scanned them.
+- **Fixes did not travel backward.** Two tool fixes made in later episodes (UTF-8 output of the review script, a
+  trademark kept in its case in upper-cased tags) never reached the earlier episodes; no single repo's maps could show it.
+- The map as an arbiter again: about half of the AI review findings were false (typos, hyphens, "missing" facts that
+  were in the narration); the screen-text map and the voice transcript ruled each one out, and confirmed the real
+  ones (a Definition of Done gate drawn after the sprint review, a marker looping through an 8-12 week interval).

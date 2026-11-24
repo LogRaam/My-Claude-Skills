@@ -138,6 +138,9 @@ already exist and describe the original. Done carelessly, the first diff is hund
 the copy dropped with what the new work added, and the informing test stays red for the whole session, which
 teaches regeneration by reflex on day one.
 
+0. Copy from a committed source whose maps are current (run its compare first). A working tree caught between a
+   code change and its map update hands the copy maps that describe neither project: the copy's first diff then
+   reports changes nobody made in it.
 1. Commit the copy untouched, maps green, as the baseline.
 2. Remove what the new project will not use (the old episode's scenes, unused tools) in a commit of its own,
    and regenerate: that diff should be pure deletion, and reading it takes a minute.
@@ -164,6 +167,11 @@ Generator requirements:
   every on-screen string): the map's blind spots become the check's, silently. For each source the header
   claims, plant one example and check it appears; when you find a path the generator misses (a list of labels
   rendered by a loop, a string placed straight in the markup), either read it or name it in the blind spots.
+- **Text kept in data is the usual blind spot.** Labels held in an array or a tuple inside a function body or a
+  prop (the steps of a sequence, the rows of a card) reach the screen without ever being a literal next to the
+  markup. A generator that reads attributes and markup text misses them, and the scope check scanning its list
+  misses them too. When the same kind of miss shows up twice, read string literals that flow into rendering from
+  data (array and tuple elements used in a render), and keep a planted example per shape in a self-test.
 - **Line endings: add `.gitattributes` (`* text=auto eol=lf`) BEFORE the first commit**, and compare with line
   endings normalized. On Windows a CRLF checkout against an LF generator turns every map red for no reason.
 - **A doc comment belongs to a declaration only if it touches it** (no blank line between). Otherwise the file's
@@ -241,6 +249,11 @@ Watch for two kinds of failure in the maps themselves, and report them when they
   refused by the compiler, two scores over the same range no longer interchangeable). A ratchet keeps the gap
   between the two from growing while you migrate, and the decision table proves each migration step moved no
   behaviour.
+- **Drift between sibling copies.** When projects are copied from one another (episodes of a series, forks of a
+  template), a tool fix made in copy N never reaches copies 1 to N-1, and each repo's maps describe only that repo:
+  none of them can see the gap. If the shared tools matter, keep them in one place (a shared package or a
+  submodule), or add a cross-repo check (hashes of the shared tool files, compared across the siblings) and list the
+  fixes to back-port in the commit that makes them.
 
 ## A map as a source of proposals
 
